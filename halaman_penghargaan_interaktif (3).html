@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penghargaan — Bingkisan Istimewa</title>
+    <!-- Tailwind CSS untuk reka bentuk responsif dan moden -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans & Caveat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js untuk sintesis piano ambien yang lembut -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 50%, #E0F2FE 100%);
+        }
+        .serif-title {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .handwritten-caption {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* Kesan Kaca Premium (Glassmorphism) */
+        .premium-glass {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+        }
+
+        /* Animasi Terapung Halus */
+        @keyframes subtleFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(0.6deg); }
+        }
+        .animate-subtle-float {
+            animation: subtleFloat 7s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.35; transform: scale(1); }
+            50% { opacity: 0.55; transform: scale(1.06); }
+        }
+        .bg-glow-pink {
+            animation: pulseGlow 10s ease-in-out infinite;
+        }
+
+        /* Gaya & Interaksi Sampul Surat 3D */
+        .envelope-container {
+            perspective: 1500px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 205px;
+            background: #BFDBFE;
+            box-shadow: 0 22px 45px rgba(147, 197, 253, 0.35);
+            border-radius: 0 0 18px 18px;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        @media (min-width: 640px) {
+            .envelope {
+                width: 320px;
+                height: 220px;
+            }
+        }
+
+        .envelope-container:hover .envelope {
+            box-shadow: 0 28px 55px rgba(147, 197, 253, 0.5);
+        }
+
+        /* Lipatan hadapan sampul */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 102.5px 150px 102.5px 150px;
+            border-color: transparent rgba(239, 246, 255, 0.55) rgba(239, 246, 255, 0.9) rgba(239, 246, 255, 0.55);
+            z-index: 3;
+            border-radius: 0 0 18px 18px;
+        }
+
+        @media (min-width: 640px) {
+            .envelope::before {
+                border-width: 110px 160px 110px 160px;
+            }
+        }
+
+        /* Penutup atas sampul */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 102.5px 150px 0 150px;
+            border-color: #A5C8F5 transparent transparent transparent;
+            transform-origin: top center;
+            transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+        }
+
+        @media (min-width: 640px) {
+            .envelope-flap {
+                border-width: 110px 160px 0 160px;
+            }
+        }
+
+        /* Cop Lilin Biru Lembut (Wax Seal) */
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -15%);
+            width: 52px;
+            height: 52px;
+            background: radial-gradient(circle at 35% 35%, #7AA8E8 0%, #5B8BD4 100%);
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 5px 12px rgba(59, 130, 246, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 15px;
+            transition: all 0.5s ease;
+        }
+
+        /* Pratonton Surat di Dalam Sampul */
+        .letter-preview {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            right: 15px;
+            height: 170px;
+            background: #ffffff;
+            border-radius: 10px;
+            z-index: 2;
+            transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        /* Keadaan Sampul Terbuka */
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-container.open .letter-preview {
+            transform: translateY(-82px);
+        }
+        .envelope-container.open .wax-seal {
+            transform: translate(-50%, -15%) scale(0) rotate(180deg);
+            opacity: 0;
+        }
+
+        /* Bar Skrol Halus */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(147, 197, 253, 0.45);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(96, 165, 250, 0.7);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(217, 163, 163, 0.65);
+        }
+
+        /* Animasi Kelopak / Hati Interaktif */
+        @keyframes floatUpFade {
+            0% {
+                transform: translateY(0) scale(0.7) rotate(0deg);
+                opacity: 0.95;
+            }
+            100% {
+                transform: translateY(-130px) scale(1.25) rotate(22deg);
+                opacity: 0;
+            }
+        }
+        .petal-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 60;
+            animation: floatUpFade 1.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden flex flex-col justify-center items-center selection:bg-[#BFDBFE] selection:text-slate-800">
+
+    <!-- Kanvas untuk zarah cahaya biru lembut yang terapung -->
+    <canvas id="sparkleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Latar Belakang Cahaya Biru Pastel Lembut -->
+    <div class="fixed top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[38vw] h-[38vw] rounded-full bg-[#DBEAFE] blur-[100px] bg-glow-pink pointer-events-none z-0"></div>
+    <div class="fixed bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[42vw] h-[42vw] rounded-full bg-[#E0F2FE] blur-[120px] bg-glow-pink pointer-events-none z-0" style="animation-delay: -5s;"></div>
+
+    <!-- PERINGKAT 1: Pintu Masuk Sampul Surat 3D Interaktif -->
+    <section id="envelopeStage" class="relative z-10 flex flex-col items-center justify-center p-6 text-center select-none transition-all duration-700">
+        <div class="mb-9">
+            <span class="inline-block px-3.5 py-1 rounded-full bg-white/70 border border-[#BFDBFE]/80 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#5B8BD4] mb-4 shadow-sm">
+                Kursus EDUP 6023
+            </span>
+            <h1 class="serif-title text-4xl sm:text-5xl font-light text-slate-800 tracking-[0.2em] mb-2 leading-tight">PENGHARGAAN</h1>
+            <p class="text-[11px] text-slate-400 uppercase tracking-[0.25em]">Ditulis khas dengan penuh rasa hormat</p>
+        </div>
+
+        <!-- Pembalut Sampul Surat 3D -->
+        <div class="envelope-container animate-subtle-float" id="envelopeWrapper" role="button" tabindex="0" aria-label="Buka sampul penghargaan" onclick="openEnvelopeCinematically()" onkeydown="if(event.key==='Enter'||event.key===' '){openEnvelopeCinematically();}">
+            <div class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="letter-preview flex flex-col items-center justify-center text-center">
+                    <p class="serif-title text-[#5B8BD4] text-xl font-medium tracking-wide">Dengan Nama Allah</p>
+                    <span class="w-8 h-[1px] bg-[#BFDBFE] my-2"></span>
+                    <p class="text-[9px] text-slate-400 uppercase tracking-widest">Bismillahirrahmanirrahim</p>
+                </div>
+                <div class="wax-seal">
+                    <i class="fa-solid fa-feather-pointed"></i>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-[11px] text-[#5B8BD4] mt-12 font-medium tracking-widest uppercase animate-pulse">
+            <i class="fa-solid fa-envelope-open-text mr-2"></i> Sentuh Untuk Buka
+        </p>
+    </section>
+
+    <!-- PERINGKAT 2: Halaman Penghargaan Utama (Tersembunyi Pada Awalnya) -->
+    <div id="appreciationStage" class="relative z-10 max-w-4xl w-full px-4 py-8 sm:py-12 flex flex-col justify-center min-h-screen hidden opacity-0 transition-all duration-1000">
+
+        <!-- Kad Utama Penghargaan -->
+        <main class="my-auto" onmousemove="triggerSubtlePianoDrop(event)">
+            <div class="premium-glass rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 shadow-2xl relative overflow-hidden border border-white/80 transition-transform duration-500">
+
+                <!-- Hiasan Cahaya Dalaman -->
+                <div class="absolute -right-32 -top-32 w-80 h-80 rounded-full bg-[#DBEAFE] blur-[130px] opacity-50 pointer-events-none"></div>
+                <div class="absolute -left-32 -bottom-32 w-80 h-80 rounded-full bg-[#E0F2FE] blur-[130px] opacity-50 pointer-events-none"></div>
+
+                <!-- Tajuk Minimalis -->
+                <div class="text-center mb-8 relative z-10">
+                    <span class="inline-block px-3 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE]/70 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5B8BD4] mb-3">
+                        EDUP 6023
+                    </span>
+                    <h2 class="serif-title text-4xl sm:text-5xl md:text-6xl font-light text-slate-800 tracking-[0.2em]">PENGHARGAAN</h2>
+                    <div class="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#93C5FD] to-transparent mx-auto mt-4"></div>
+                </div>
+
+                <!-- Susun Atur Satu Lajur Terpusat (Tanpa Gambar) -->
+                <div class="max-w-2xl mx-auto relative z-10">
+
+                    <!-- Lajur Teks Penghargaan -->
+                    <div id="appreciationTextContent" class="space-y-5 text-slate-600 leading-relaxed font-light text-justify text-[14px] sm:text-[15.5px] max-h-[54vh] md:max-h-[60vh] overflow-y-auto pr-3 custom-scrollbar">
+
+                        <p class="font-semibold text-center text-slate-800 text-base sm:text-lg tracking-wider mb-2">
+                            Bismillahirrahmanirrahim.
+                        </p>
+
+                        <p>
+                            Alhamdulillah, saya memanjatkan rasa syukur ke hadrat Allah SWT kerana dengan limpah rahmat dan izin-Nya, saya diberi kekuatan, kesihatan dan kesempatan untuk menyiapkan tugasan ini dengan jayanya. Walaupun ada saat saya berasa penat dan menghadapi kesukaran, saya bersyukur kerana masih diberikan semangat untuk meneruskan usaha sehingga tugasan ini berjaya disiapkan.
+                        </p>
+
+                        <p>
+                            Pertama sekali, saya ingin mengucapkan setinggi-tinggi penghargaan dan ribuan terima kasih kepada pensyarah kursus EDUP 6023, <span class="font-medium text-slate-800">Encik Mohd Alfazuan bin Abdul Ghafar</span>, atas segala tunjuk ajar, bimbingan, kesabaran dan nasihat yang diberikan sepanjang saya menyiapkan tugasan ini. Segala ilmu yang dikongsikan amat bermakna dan banyak membantu saya menghasilkan tugasan ini dengan lebih baik.
+                        </p>
+
+                        <p>
+                            Seterusnya, saya ingin mengucapkan terima kasih yang tidak terhingga kepada kedua-dua ibu bapa saya yang amat saya sayangi. Walaupun mereka berada jauh daripada saya, doa, kasih sayang dan sokongan mereka sentiasa menjadi kekuatan untuk saya terus berusaha. Pengorbanan mereka tidak mampu saya balas dengan kata-kata, dan saya berharap suatu hari nanti saya dapat membanggakan mereka.
+                        </p>
+
+                        <p>
+                            Akhir sekali, saya juga ingin mengucapkan terima kasih kepada rakan-rakan yang sentiasa sudi membantu, berkongsi idea dan memberi semangat sepanjang saya menyiapkan tugasan ini. Setiap bantuan yang diberikan amat saya hargai dan tidak akan saya lupakan.
+                        </p>
+
+                        <p class="border-t border-blue-100 pt-4 italic text-center text-slate-500 font-normal">
+                            Akhir kata, saya mendoakan agar segala kebaikan dan jasa semua pihak yang telah membantu saya ini dibalas dengan rahmat dan keberkatan oleh Allah SWT. Semoga ilmu yang saya peroleh melalui tugasan ini dapat memberi manfaat kepada saya pada masa hadapan.
+                        </p>
+
+                    </div>
+
+                    <!-- Dedikasi Ringkas Pensyarah Akademik -->
+                    <div class="mt-7 pt-5 border-t border-blue-100/80 text-center">
+                        <p class="text-[10px] uppercase tracking-[0.25em] text-slate-400 mb-1">Pensyarah Akademik • EDUP 6023</p>
+                        <p class="handwritten-caption text-[#4A7EC7] text-2xl sm:text-3xl font-semibold tracking-wide">
+                            Encik Mohd Alfazuan bin Abdul Ghafar
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Titik Hiasan Bawah -->
+                <div class="flex justify-center items-center gap-2 mt-7 relative z-10">
+                    <span class="w-1 h-1 rounded-full bg-[#93C5FD]/60"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#60A5FA]"></span>
+                    <span class="w-1 h-1 rounded-full bg-[#93C5FD]/60"></span>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- 1. SINTESIS PIANO AMBIEN LEMBUT (TONE.JS) ---
+        let pianoSynth = null;
+        let padSynth = null;
+        let ambientTimer = null;
+        let soundIsMuted = false;
+        let audioInitialized = false;
+
+        // Progresi kord yang tenang dan menyentuh hati
+        const warmChords = [
+            ["C4", "E4", "G4", "B4"],
+            ["A3", "E4", "A4", "C5"],
+            ["F3", "C4", "F4", "A4"],
+            ["G3", "D4", "G4", "B4"]
+        ];
+        const peacefulNotes = ["C5", "D5", "E5", "G5", "A5", "C6", "D6", "E6"];
+        let chordIndex = 0;
+
+        function initPianoSynthesizer() {
+            if (audioInitialized) return;
+            try {
+                const reverb = new Tone.Reverb({
+                    decay: 5.5,
+                    wet: 0.6
+                }).toDestination();
+
+                const delay = new Tone.FeedbackDelay({
+                    delayTime: "4n",
+                    feedback: 0.3,
+                    wet: 0.25
+                }).connect(reverb);
+
+                const feltFilter = new Tone.Filter({
+                    frequency: 950,
+                    type: "lowpass",
+                    Q: 1
+                }).connect(delay);
+
+                // Piano utama (felt piano)
+                pianoSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: {
+                        attack: 0.04,
+                        decay: 1.4,
+                        sustain: 0.15,
+                        release: 2.5
+                    }
+                }).connect(feltFilter);
+                pianoSynth.volume.value = -10;
+
+                // Lapisan pad hangat di latar belakang
+                padSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "triangle" },
+                    envelope: {
+                        attack: 1.8,
+                        decay: 1.5,
+                        sustain: 0.4,
+                        release: 3.5
+                    }
+                }).connect(feltFilter);
+                padSynth.volume.value = -22;
+
+                audioInitialized = true;
+            } catch (e) {
+                console.warn("Sintesis audio tidak dapat dimulakan:", e);
+            }
+        }
+
+        function playGenerativePianoFlow() {
+            if (ambientTimer) clearTimeout(ambientTimer);
+            if (!soundIsMuted && pianoSynth && padSynth) {
+                try {
+                    // Mainkan kord latar lembut secara berkala
+                    const chord = warmChords[chordIndex % warmChords.length];
+                    padSynth.triggerAttackRelease(chord, "1n", undefined, 0.25);
+                    chordIndex++;
+
+                    // Mainkan nota melodi pentatonik yang organik
+                    const randomNote = peacefulNotes[Math.floor(Math.random() * peacefulNotes.length)];
+                    const velocity = Math.random() * 0.22 + 0.12;
+                    setTimeout(() => {
+                        if (!soundIsMuted && pianoSynth) {
+                            pianoSynth.triggerAttackRelease(randomNote, "2n", undefined, velocity);
+                        }
+                    }, 900);
+                } catch (err) {
+                    console.debug(err);
+                }
+            }
+
+            // Jadualkan alunan seterusnya setiap 4.5 - 7 saat
+            const nextBreath = Math.random() * 2500 + 4500;
+            ambientTimer = setTimeout(playGenerativePianoFlow, nextBreath);
+        }
+
+        // Nota piano lembut apabila tetikus bergerak di atas kad penghargaan
+        let lastPianoTriggerTime = 0;
+        function triggerSubtlePianoDrop() {
+            if (soundIsMuted || !pianoSynth) return;
+            const now = Date.now();
+            if (now - lastPianoTriggerTime > 2200) {
+                lastPianoTriggerTime = now;
+                try {
+                    const hoverNotes = ["G5", "A5", "C6", "E6", "G6"];
+                    const note = hoverNotes[Math.floor(Math.random() * hoverNotes.length)];
+                    pianoSynth.triggerAttackRelease(note, "4n", undefined, 0.08);
+                } catch (e) {}
+            }
+        }
+
+        // --- 2. ALIRAN BUKA SAMPUL SURAT ---
+        let isOpening = false;
+        function openEnvelopeCinematically() {
+            if (isOpening) return;
+            isOpening = true;
+
+            const envelopeWrapper = document.getElementById('envelopeWrapper');
+            const envelopeStage = document.getElementById('envelopeStage');
+            const appreciationStage = document.getElementById('appreciationStage');
+
+            // Animasi sampul dibuka
+            envelopeWrapper.classList.add('open');
+
+            // Mulakan alunan piano Tone.js
+            Tone.start().then(() => {
+                initPianoSynthesizer();
+                if (!soundIsMuted && pianoSynth) {
+                    // Mainkan arpeggio pembukaan yang manis
+                    const introNotes = ["C5", "E5", "G5", "C6"];
+                    introNotes.forEach((n, idx) => {
+                        setTimeout(() => {
+                            if (!soundIsMuted && pianoSynth) {
+                                pianoSynth.triggerAttackRelease(n, "2n", undefined, 0.2);
+                            }
+                        }, idx * 180);
+                    });
+                    setTimeout(playGenerativePianoFlow, 1600);
+                }
+            }).catch(() => {});
+
+            // Peralihan dari sampul ke kad penghargaan
+            setTimeout(() => {
+                envelopeStage.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    envelopeStage.classList.add('hidden');
+                    appreciationStage.classList.remove('hidden');
+                    setTimeout(() => {
+                        appreciationStage.classList.remove('opacity-0');
+                        isOpening = false;
+                    }, 50);
+                }, 650);
+            }, 950);
+        }
+
+        // --- 3. KANVAS ZARAH CAHAYA BIRU LEMBUT ---
+        const canvas = document.getElementById('sparkleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Sparkle {
+            constructor() {
+                this.reset(true);
+            }
+
+            reset(initial = false) {
+                this.x = Math.random() * canvas.width;
+                this.y = initial ? Math.random() * canvas.height : canvas.height + 15;
+                this.size = Math.random() * 2.6 + 0.9;
+                this.speedY = -(Math.random() * 0.22 + 0.08);
+                this.speedX = (Math.random() - 0.5) * 0.12;
+                this.opacity = Math.random() * 0.4 + 0.15;
+                const colors = [
+                    'rgba(147, 197, 253, ',
+                    'rgba(96, 165, 250, ',
+                    'rgba(186, 230, 253, ',
+                    'rgba(255, 255, 255, '
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y < -15) this.reset(false);
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + this.opacity + ')';
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.45)';
+                ctx.fill();
+            }
+        }
+
+        function initCanvasEngine() {
+            particles = [];
+            for (let i = 0; i < 30; i++) {
+                particles.push(new Sparkle());
+            }
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        // Mulakan animasi zarah cahaya sebaik sahaja halaman dimuatkan
+        window.onload = function () {
+            initCanvasEngine();
+        };
+    </script>
+</body>
+</html>
